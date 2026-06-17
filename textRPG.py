@@ -24,7 +24,7 @@ while True:
     elif pergunta2 == 'usar espada':
         print('Você usa a espada para quebrar a porta, você consegue e vê um corredor grande. Sua aventura continua...')
     else:        print('Opção inválida, por favor escolha entre usar pá, usar tocha ou usar espada.')
-    break
+    time.sleep(3)
     print('\nEnquanto você caminha pelo corredor, você ve uma gigantesca aranha e voces entraram em combate.')
     pergunta3 = input('O que você faz? (usar pá, usar tocha, usar espada) '.lower().strip())
     if pergunta3 == 'usar pá':
@@ -35,7 +35,7 @@ while True:
     elif pergunta3 == 'usar espada':
         print('Você usa a espada para atacar a aranha, a aranha é cortada em pedaços e morre. Você continua sua aventura...')
     else:        print('Opção inválida, por favor escolha entre usar pá, usar tocha ou usar espada.')
-    break
+    time.sleep(3)
     print('\nApós derrotar a aranha, você encontra uma escada que leva para o próximo andar do porão.')
     pergunta4 = input('Você sobe a escada? (sim ou não) '.lower().strip())
     time.sleep(3)   
