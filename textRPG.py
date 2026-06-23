@@ -3,7 +3,7 @@ import time
 while True:
     print('\nVocê acordou em um porão misterioso, você não sabe como chegou ali.')
     print('Após despertar você vê num canto uma pá, uma tocha e uma espada.')
-    pergunta = input('Qual devo pegar? '.lower().strip())
+    pergunta = input('Qual devo pegar? ').lower().strip()
     time.sleep(3)
     if pergunta == 'pá':
         print('Você pegou a pá e está pronto para cavar.')
@@ -13,9 +13,9 @@ while True:
         print('Você pegou a espada e está pronto para lutar.')
     else:
         print('Opção inválida, por favor escolha entre pá, tocha ou espada.')
-        break
+        continue
     print('\nVocê decide explorar o porão e encontra uma porta de madeira trancada.')
-    pergunta2 = input('O que você faz? (usar pá, usar tocha, usar espada) '.lower().strip())
+    pergunta2 = input('O que você faz? (usar pá, usar tocha, usar espada) ').lower().strip()
     time.sleep(3)
     if pergunta2 == 'usar pá':
         print('Você usa a pá para quebrar a porta, voce consegue abri-la mas vê um corrdor grande. Sua aventura continua...')
@@ -26,7 +26,7 @@ while True:
     else:        print('Opção inválida, por favor escolha entre usar pá, usar tocha ou usar espada.')
     time.sleep(3)
     print('\nEnquanto você caminha pelo corredor, você ve uma gigantesca aranha e voces entraram em combate.')
-    pergunta3 = input('O que você faz? (usar pá, usar tocha, usar espada) '.lower().strip())
+    pergunta3 = input('O que você faz? (usar pá, usar tocha, usar espada) ').lower().strip()
     if pergunta3 == 'usar pá':
         print('Você usa a pá para atacar a aranha, mas a pá quebra. A aranha ataca você e você perde a luta. Fim de jogo.')
         break
@@ -37,12 +37,12 @@ while True:
     else:        print('Opção inválida, por favor escolha entre usar pá, usar tocha ou usar espada.')
     time.sleep(3)
     print('\nApós derrotar a aranha, você encontra uma escada que leva para o próximo andar do porão.')
-    pergunta4 = input('Você sobe a escada? (sim ou não) '.lower().strip())
+    pergunta4 = input('Você sobe a escada? (sim ou não) ').lower().strip()
     time.sleep(3)   
     if pergunta4 == 'sim':
         print('Você sobe a escada e encontra um poderoso dragao, vermelho e amendrontador.' \
         'suas escamas brilham e seu bafo fede a morte e destruição. Você entra em combate com o dragão.')
-        pergunta5 = input('O que você faz? (usar tocha, usar espada) '.lower().strip())
+        pergunta5 = input('O que você faz? (usar tocha, usar espada) ').lower().strip()
         if pergunta5 == 'usar tocha':
             print('Você usa a tocha para atacar o dragão, mas o dragão é resistente ao fogo e você perde a luta. Fim de jogo.')
             break
@@ -55,8 +55,8 @@ while True:
     else:        print('Opção inválida, por favor escolha entre sim ou não.')
     time.sleep(3)
     print('\nvocê encontra um bau cheio de riquezas e consegue sair do porão.' \
-    'fim de jogo. Deseja jogar novamente? (sim ou não) '.lower().strip())
-    jogar_novamente = input()
+    'fim de jogo. Deseja jogar novamente? (sim ou não) ')
+    jogar_novamente = input().lower().strip()
     if jogar_novamente == 'sim':
         continue
     elif jogar_novamente == 'não':
