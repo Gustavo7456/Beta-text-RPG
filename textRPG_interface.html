@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Porão Misterioso — Text RPG</title>
+  <style>
+    :root {
+      --rpg-bg: #1a1a2e;
+      --rpg-surface: #16213e;
+      --rpg-card: #0f3460;
+      --rpg-accent: #e94560;
+      --rpg-gold: #f5a623;
+      --rpg-text: #eaeaea;
+      --rpg-muted: #a0a0b0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #111; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: monospace; }
+    #rpg { font-family: monospace; background: var(--rpg-bg); color: var(--rpg-text); min-height: 520px; width: 680px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+    #log { flex: 1; padding: 1.25rem; overflow-y: auto; max-height: 320px; display: flex; flex-direction: column; gap: 8px; }
+    .msg { font-size: 13.5px; line-height: 1.6; padding: 8px 12px; border-radius: 6px; }
+    .msg.narr  { background: rgba(255,255,255,0.04); border-left: 2px solid var(--rpg-gold); color: var(--rpg-text); }
+    .msg.player { color: #7ec8e3; font-style: italic; }
+    .msg.result { color: #a8e6a3; }
+    .msg.danger { color: #ff8a80; }
+    .msg.system { color: var(--rpg-muted); font-size: 12px; text-align: center; }
+    #choices { padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; flex-wrap: wrap; gap: 8px; min-height: 70px; align-items: center; }
+    .choice-btn { background: var(--rpg-card); border: 1px solid rgba(255,255,255,0.12); color: var(--rpg-text); font-family: monospace; font-size: 13px; padding: 8px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+    .choice-btn:hover { background: var(--rpg-accent); border-color: var(--rpg-accent); color: #fff; transform: translateY(-1px); }
+    .choice-btn:active { transform: translateY(0); }
+    #header { padding: 0.75rem 1.25rem; background: var(--rpg-surface); border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; }
+    #header h2 { font-size: 14px; font-weight: 500; color: var(--rpg-gold); letter-spacing: 1px; text-transform: uppercase; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #ffbd2e; }
+    .dot.g { background: #28c840; }
+    #inv { font-size: 11px; color: var(--rpg-muted); margin-left: auto; padding: 3px 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; }
+  </style>
+</head>
+<body>
+  <div id="rpg">
+    <div id="header">
+      <span class="dot r"></span>
+      <span class="dot y"></span>
+      <span class="dot g"></span>
+      <h2>⚔ Porão Misterioso</h2>
+      <div id="inv">inventário: vazio</div>
+    </div>
+    <div id="log"></div>
+    <div id="choices"></div>
+  </div>
+
+  <script>
+    const log     = document.getElementById('log');
+    const choices = document.getElementById('choices');
+    const inv     = document.getElementById('inv');
+
+    let inventory = [];
+
+    function addMsg(text, type = 'narr') {
+      const d = document.createElement('div');
+      d.className = 'msg ' + type;
+      d.textContent = text;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function setChoices(opts) {
+      choices.innerHTML = '';
+      opts.forEach(o => {
+        const b = document.createElement('button');
+        b.className = 'choice-btn';
+        b.textContent = o.label;
+        b.onclick = () => choose(o);
+        choices.appendChild(b);
+      });
+    }
+
+    function updateInv() {
+      inv.textContent = inventory.length
+        ? 'inventário: ' + inventory.join(', ')
+        : 'inventário: vazio';
+    }
+
+    function delay(fn, ms = 600) { setTimeout(fn, ms); }
+
+    function choose(opt) {
+      choices.innerHTML = '';
+      addMsg('> ' + opt.label, 'player');
+      delay(() => opt.action());
+    }
+
+    function restart() {
+      log.innerHTML = '';
+      inventory = [];
+      updateInv();
+      startGame();
+    }
+
+    function endGame(msg, isWin = false) {
+      addMsg(msg, isWin ? 'result' : 'danger');
+      delay(() => {
+        addMsg('— Fim de jogo —', 'system');
+        delay(() => setChoices([{ label: '↺ Jogar novamente', action: restart }]), 600);
+      }, 800);
+    }
+
+    function startGame() {
+      addMsg('Você acordou em um porão misterioso. Não sabe como chegou ali.');
+      addMsg('Num canto você avista três itens: uma pá, uma tocha e uma espada.');
+      delay(() => {
+        setChoices([
+          { label: '🪛 Pegar a pá',     action: () => pickItem('pá') },
+          { label: '🔦 Pegar a tocha',  action: () => pickItem('tocha') },
+          { label: '⚔️ Pegar a espada', action: () => pickItem('espada') },
+        ]);
+      }, 400);
+    }
+
+    function pickItem(item) {
+      inventory = [item];
+      updateInv();
+      const msgs = {
+        pá:     'Você pega a pá. Ela é pesada, mas pode ser útil para cavar.',
+        tocha:  'Você pega a tocha. Sua chama ilumina os cantos escuros do porão.',
+        espada: 'Você pega a espada. A lâmina reluz mesmo na escuridão.',
+      };
+      addMsg(msgs[item], 'result');
+      delay(doorScene);
+    }
+
+    function doorScene() {
+      addMsg('Explorando o porão, você encontra uma porta de madeira trancada.');
+      delay(() => {
+        setChoices([
+          { label: '🪛 Usar a pá',     action: () => useDoor('pá') },
+          { label: '🔦 Usar a tocha',  action: () => useDoor('tocha') },
+          { label: '⚔️ Usar a espada', action: () => useDoor('espada') },
+        ]);
+      }, 400);
+    }
+
+    function useDoor(item) {
+      const msgs = {
+        pá:     'Você usa a pá para arrombar a porta. Com esforço, ela cede — um corredor largo se abre.',
+        tocha:  'Você queima a porta com a tocha. Ela range e desmorona, revelando um corredor escuro.',
+        espada: 'Você corta os gonzos com a espada. A porta cai e um corredor largo se abre à sua frente.',
+      };
+      addMsg(msgs[item], 'result');
+      delay(spiderScene);
+    }
+
+    function spiderScene() {
+      addMsg('Ao avançar pelo corredor, uma ARANHA GIGANTE bloqueia seu caminho!');
+      addMsg('Suas presas gotejam veneno. Ela se prepara para atacar!', 'danger');
+      delay(() => {
+        setChoices([
+          { label: '🪛 Usar a pá',     action: () => fightSpider('pá') },
+          { label: '🔦 Usar a tocha',  action: () => fightSpider('tocha') },
+          { label: '⚔️ Usar a espada', action: () => fightSpider('espada') },
+        ]);
+      }, 500);
+    }
+
+    function fightSpider(item) {
+      if (item === 'pá') {
+        addMsg('Você tenta golpear a aranha com a pá — mas ela se parte no exoesqueleto duro!', 'danger');
+        endGame('A aranha te envolve em teia e morde seu pescoço. Você sucumbe ao veneno.');
+        return;
+      }
+      if (item === 'tocha') {
+        addMsg('Você empurra a tocha contra a aranha. Ela recua, soltando um grito agudo, e vai se consumindo nas chamas.', 'result');
+      } else {
+        addMsg('Você gira a espada com precisão e corta a aranha ao meio. Um golpe certeiro!', 'result');
+      }
+      delay(stairsScene);
+    }
+
+    function stairsScene() {
+      addMsg('Com a aranha derrotada, você avista uma escada que sobe para o próximo andar.');
+      delay(() => {
+        setChoices([
+          { label: '⬆️ Subir a escada',        action: () => climbStairs(true) },
+          { label: '🔍 Continuar explorando',   action: () => climbStairs(false) },
+        ]);
+      }, 400);
+    }
+
+    function climbStairs(yes) {
+      if (!yes) {
+        endGame('Você decide explorar mais o porão. Horas depois, completamente perdido e sem água, você perece de exaustão.');
+        return;
+      }
+      addMsg('Você sobe a escada e emerge num salão enorme.');
+      addMsg('No centro, um DRAGÃO VERMELHO abre os olhos dourados. Fumaça escapa de suas narinas.', 'danger');
+      addMsg('Seu rugido faz as pedras tremerem. Ele está acordado — e faminto!', 'danger');
+      delay(() => {
+        setChoices([
+          { label: '🔦 Usar a tocha',  action: () => fightDragon('tocha') },
+          { label: '⚔️ Usar a espada', action: () => fightDragon('espada') },
+        ]);
+      }, 600);
+    }
+
+    function fightDragon(item) {
+      if (item === 'tocha') {
+        addMsg('Você ergue a tocha contra o dragão... mas ele apenas sorri e solta um bafo de fogo 10x mais potente!', 'danger');
+        endGame('A chama do dragão te envolve completamente. A tocha não adiantou nada.');
+        return;
+      }
+      addMsg('Você avança com a espada, esquivando do bafo de fogo, e crava a lâmina no coração do dragão!', 'result');
+      delay(() => {
+        addMsg('O dragão ruge pela última vez e desmorona. O salão silencia.');
+        delay(() => {
+          addMsg('No fundo do salão, um imenso baú de ouro e joias brilha à luz das chamas.');
+          addMsg('🏆 Você escapou do porão com riquezas imensas. Você venceu!', 'result');
+          delay(() => {
+            addMsg('— Vitória! —', 'system');
+            delay(() => setChoices([{ label: '↺ Jogar novamente', action: restart }]), 400);
+          }, 600);
+        }, 700);
+      }, 600);
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
